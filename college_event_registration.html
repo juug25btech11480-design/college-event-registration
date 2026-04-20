@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Event Registration System</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;color:#1a1a2e;min-height:100vh}
+  header{background:#1a1a2e;color:#fff;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+  header h1{font-size:20px;font-weight:600;letter-spacing:.5px}
+  header span{font-size:13px;opacity:.6}
+  nav{background:#fff;border-bottom:1px solid #e2e8f0;display:flex;gap:4px;padding:.5rem 2rem;flex-wrap:wrap}
+  nav button{padding:8px 18px;border-radius:8px;border:none;background:transparent;cursor:pointer;font-size:14px;color:#555;transition:all .15s;font-family:inherit}
+  nav button.active{background:#e8f0fe;color:#1a56db;font-weight:500}
+  nav button:hover:not(.active){background:#f1f5f9}
+  .container{max-width:1100px;margin:0 auto;padding:2rem}
+  .page{display:none}.page.active{display:block}
+  h2{font-size:22px;font-weight:600;margin-bottom:.4rem;color:#1a1a2e}
+  .subtitle{color:#64748b;font-size:14px;margin-bottom:1.5rem}
+  h3{font-size:16px;font-weight:600;margin-bottom:1rem;color:#1a1a2e}
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:2rem}
+  .metric{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #e2e8f0}
+  .metric .label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .metric .val{font-size:28px;font-weight:700;color:#1a1a2e}
+  .card{background:#fff;border-radius:12px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #e2e8f0;margin-bottom:1.5rem}
+  .event-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-bottom:2rem}
+  .event-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.25rem;transition:box-shadow .2s,border-color .2s}
+  .event-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);border-color:#93c5fd}
+  .event-card .ename{font-size:15px;font-weight:600;margin-bottom:6px;color:#1a1a2e}
+  .event-card .emeta{font-size:12px;color:#64748b;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+  .badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;margin-top:8px}
+  .badge-tech{background:#e8f0fe;color:#1a56db}
+  .badge-cultural{background:#fef3c7;color:#92400e}
+  .badge-sports{background:#dcfce7;color:#166534}
+  .badge-workshop{background:#f0fdf4;color:#15803d}
+  label{font-size:13px;color:#374151;display:block;margin-bottom:5px;font-weight:500}
+  input,select,textarea{display:block;width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1a1a2e;font-size:14px;margin-bottom:14px;font-family:inherit;transition:border-color .15s}
+  input:focus,select:focus{outline:none;border-color:#1a56db;box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+  .btn{padding:10px 22px;border-radius:8px;border:1px solid #d1d5db;background:#fff;cursor:pointer;font-size:14px;color:#374151;font-family:inherit;font-weight:500;transition:all .15s}
+  .btn:hover{background:#f1f5f9}
+  .btn-primary{background:#1a56db;color:#fff;border-color:#1a56db}
+  .btn-primary:hover{background:#1649c0}
+  .btn-danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}
+  .btn-danger:hover{background:#fecaca}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:10px 14px;background:#f8fafc;font-weight:600;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #e2e8f0}
+  td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:#1a1a2e}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f8fafc}
+  .success-msg{background:#dcfce7;color:#166534;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:1rem;display:none}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .home-event-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9}
+  .home-event-row:last-child{border-bottom:none}
+  .empty{color:#94a3b8;font-size:13px;padding:1.5rem 0;text-align:center}
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+  .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+  .admin-event-row{display:flex;justify-content:space-between;align-items:center;padding:12px 1.5rem;border-bottom:1px solid #f1f5f9}
+  .admin-event-row:last-child{border-bottom:none}
+  @media(max-width:600px){
+    .form-row,.admin-grid{grid-template-columns:1fr}
+    .container{padding:1rem}
+    header{padding:.75rem 1rem}
+    nav{padding:.5rem 1rem}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#127979; College Event Registration System</h1>
+  <span>Student Portal</span>
+</header>
+
+<nav>
+  <button class="active" onclick="showPage('home')">&#127968; Home</button>
+  <button onclick="showPage('events')">&#127882; Events</button>
+  <button onclick="showPage('register')">&#9997; Register</button>
+  <button onclick="showPage('participants')">&#128101; Participants</button>
+  <button onclick="showPage('admin')">&#9881; Admin panel</button>
+</nav>
+
+<div class="container">
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <h2>Welcome to the Event Portal</h2>
+    <p class="subtitle">Browse events, register as a participant, and let admins manage everything in one place.</p>
+    <div class="grid-3">
+      <div class="metric"><div class="label">Total events</div><div class="val" id="stat-events">0</div></div>
+      <div class="metric"><div class="label">Registrations</div><div class="val" id="stat-regs">0</div></div>
+      <div class="metric"><div class="label">Departments</div><div class="val">4</div></div>
+      <div class="metric"><div class="label">Venues</div><div class="val" id="stat-venues">0</div></div>
+    </div>
+    <div class="card">
+      <h3>&#128197; Upcoming events</h3>
+      <div id="home-events-list"></div>
+    </div>
+  </div>
+
+  <!-- EVENTS -->
+  <div id="page-events" class="page">
+    <h2>All Events</h2>
+    <p class="subtitle">Click on an event to learn more or head to Register to sign up.</p>
+    <div id="events-grid" class="event-grid"></div>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="page-register" class="page">
+    <h2>Register for an Event</h2>
+    <p class="subtitle">Fill in your details and choose the event you want to participate in.</p>
+    <div class="card" style="max-width:540px">
+      <div id="reg-success" class="success-msg">&#10003; Registration successful! You have been registered.</div>
+      <div class="form-row">
+        <div>
+          <label>Full name</label>
+          <input type="text" id="reg-name" placeholder="e.g. Rahul Sharma">
+        </div>
+        <div>
+          <label>Roll number</label>
+          <input type="text" id="reg-roll" placeholder="e.g. CS22001">
+        </div>
+      </div>
+      <label>Email address</label>
+      <input type="email" id="reg-email" placeholder="student@college.edu">
+      <label>Department</label>
+      <select id="reg-dept">
+        <option value="">Select your department</option>
+        <option>Computer Science</option>
+        <option>Electronics</option>
+        <option>Mechanical</option>
+        <option>Civil</option>
+      </select>
+      <label>Year of study</label>
+      <select id="reg-year">
+        <option value="">Select year</option>
+        <option>1st Year</option>
+        <option>2nd Year</option>
+        <option>3rd Year</option>
+        <option>4th Year</option>
+      </select>
+      <label>Select event</label>
+      <select id="reg-event">
+        <option value="">Choose an event</option>
+      </select>
+      <button class="btn btn-primary" onclick="registerParticipant()" style="width:100%;margin-top:4px">Submit registration</button>
+    </div>
+  </div>
+
+  <!-- PARTICIPANTS -->
+  <div id="page-participants" class="page">
+    <h2>Registered Participants</h2>
+    <p class="subtitle">View and filter all registered students across events.</p>
+    <div class="row">
+      <select id="filter-event" style="width:220px;margin:0" onchange="renderParticipants()">
+        <option value="">All events</option>
+      </select>
+      <input type="text" id="search-name" placeholder="&#128269; Search by name or roll no..." style="width:240px;margin:0" oninput="renderParticipants()">
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Roll no.</th>
+            <th>Department</th>
+            <th>Year</th>
+            <th>Event</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody id="participants-table"></tbody>
+      </table>
+      <div id="no-participants" class="empty" style="display:none">No participants found.</div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="page-admin" class="page">
+    <h2>Admin Panel</h2>
+    <p class="subtitle">Add new events or remove existing ones.</p>
+    <div class="admin-grid">
+      <div>
+        <div class="card">
+          <h3>&#10133; Add new event</h3>
+          <div id="admin-success" class="success-msg">&#10003; Event added successfully!</div>
+          <label>Event name</label>
+          <input type="text" id="ev-name" placeholder="e.g. Hackathon 2025">
+          <label>Category</label>
+          <select id="ev-cat">
+            <option>Technical</option>
+            <option>Cultural</option>
+            <option>Sports</option>
+            <option>Workshop</option>
+          </select>
+          <label>Date</label>
+          <input type="date" id="ev-date">
+          <label>Venue</label>
+          <input type="text" id="ev-venue" placeholder="e.g. Seminar Hall A">
+          <label>Max seats</label>
+          <input type="number" id="ev-seats" placeholder="50" min="1">
+          <label>Description</label>
+          <input type="text" id="ev-desc" placeholder="Brief description of the event">
+          <button class="btn btn-primary" onclick="addEvent()" style="width:100%">Add event</button>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:1rem 1.5rem;font-weight:600;font-size:15px;border-bottom:1px solid #e2e8f0">Manage events</div>
+          <div id="admin-events-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var events = [
+    {id:1, name:"Hackathon 2025", category:"Technical", date:"2025-09-15", venue:"Lab Block", seats:60, desc:"24-hour coding challenge for all CS students"},
+    {id:2, name:"Classical dance fest", category:"Cultural", date:"2025-09-20", venue:"Open Air Stage", seats:100, desc:"Annual inter-department cultural extravaganza"},
+    {id:3, name:"Circuit design workshop", category:"Workshop", date:"2025-09-25", venue:"ECE Lab", seats:40, desc:"Hands-on workshop on PCB and circuit design"}
+  ];
+  var participants = [];
+  var nextId = 4;
+
+  function badgeClass(cat) {
+    var m = {Technical:"badge-tech", Cultural:"badge-cultural", Sports:"badge-sports", Workshop:"badge-workshop"};
+    return m[cat] || "badge-tech";
+  }
+
+  function showPage(p) {
+    document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active')});
+    document.getElementById('page-'+p).classList.add('active');
+    var pages = ['home','events','register','participants','admin'];
+    document.querySelectorAll('nav button')[pages.indexOf(p)].classList.add('active');
+    if(p==='home') renderHome();
+    if(p==='events') renderEvents();
+    if(p==='register') populateEventDropdowns();
+    if(p==='participants'){populateFilterDropdown(); renderParticipants();}
+    if(p==='admin') renderAdminEvents();
+  }
+
+  function renderHome() {
+    document.getElementById('stat-events').textContent = events.length;
+    document.getElementById('stat-regs').textContent = participants.length;
+    var venues = [...new Set(events.map(function(e){return e.venue}))];
+    document.getElementById('stat-venues').textContent = venues.length;
+    var list = document.getElementById('home-events-list');
+    if(events.length === 0){list.innerHTML='<div class="empty">No events yet. Add events from the Admin panel.</div>';return;}
+    list.innerHTML = events.slice(0,5).map(function(e){
+      return '<div class="home-event-row"><div><div style="font-size:14px;font-weight:600">'+e.name+'</div><div style="font-size:12px;color:#64748b;margin-top:2px">'+e.venue+' &nbsp;&middot;&nbsp; '+e.date+'</div></div><span class="badge '+badgeClass(e.category)+'">'+e.category+'</span></div>';
+    }).join('');
+  }
+
+  function renderEvents() {
+    var g = document.getElementById('events-grid');
+    if(events.length === 0){g.innerHTML='<div class="empty">No events available. Check back later.</div>';return;}
+    g.innerHTML = events.map(function(e){
+      var reg = participants.filter(function(p){return p.evId===e.id}).length;
+      return '<div class="event-card"><div class="ename">'+e.name+'</div><div class="emeta">&#128205; '+e.venue+'</div><div class="emeta">&#128197; '+e.date+'</div><div class="emeta">&#128101; '+reg+' / '+e.seats+' registered</div><div class="emeta" style="margin-top:4px;color:#374151">'+e.desc+'</div><span class="badge '+badgeClass(e.category)+'">'+e.category+'</span></div>';
+    }).join('');
+  }
+
+  function populateEventDropdowns() {
+    var s = document.getElementById('reg-event');
+    s.innerHTML = '<option value="">Choose an event</option>' + events.map(function(e){return '<option value="'+e.id+'">'+e.name+'</option>';}).join('');
+  }
+
+  function populateFilterDropdown() {
+    var s = document.getElementById('filter-event');
+    s.innerHTML = '<option value="">All events</option>' + events.map(function(e){return '<option value="'+e.id+'">'+e.name+'</option>';}).join('');
+  }
+
+  function registerParticipant() {
+    var name = document.getElementById('reg-name').value.trim();
+    var roll = document.getElementById('reg-roll').value.trim();
+    var email = document.getElementById('reg-email').value.trim();
+    var dept = document.getElementById('reg-dept').value;
+    var year = document.getElementById('reg-year').value;
+    var evId = parseInt(document.getElementById('reg-event').value);
+    if(!name||!roll||!email||!dept||!year||!evId){alert('Please fill in all fields before submitting.');return;}
+    var already = participants.find(function(p){return p.roll===roll && p.evId===evId;});
+    if(already){alert('This roll number is already registered for this event!');return;}
+    var ev = events.find(function(e){return e.id===evId;});
+    var regCount = participants.filter(function(p){return p.evId===evId;}).length;
+    if(regCount >= ev.seats){alert('Sorry, this event is full!');return;}
+    participants.push({name:name, roll:roll, email:email, dept:dept, year:year, event:ev.name, evId:evId});
+    document.getElementById('reg-name').value='';
+    document.getElementById('reg-roll').value='';
+    document.getElementById('reg-email').value='';
+    document.getElementById('reg-dept').value='';
+    document.getElementById('reg-year').value='';
+    document.getElementById('reg-event').value='';
+    var msg = document.getElementById('reg-success');
+    msg.style.display='block';
+    setTimeout(function(){msg.style.display='none';}, 3500);
+  }
+
+  function renderParticipants() {
+    var evFilter = document.getElementById('filter-event').value;
+    var search = document.getElementById('search-name').value.toLowerCase();
+    var list = participants.filter(function(p){
+      var matchEv = !evFilter || p.evId===parseInt(evFilter);
+      var matchSearch = !search || p.name.toLowerCase().includes(search) || p.roll.toLowerCase().includes(search);
+      return matchEv && matchSearch;
+    });
+    var tbody = document.getElementById('participants-table');
+    var noP = document.getElementById('no-participants');
+    if(list.length===0){tbody.innerHTML=''; noP.style.display='block'; return;}
+    noP.style.display='none';
+    tbody.innerHTML = list.map(function(p,i){
+      return '<tr><td>'+(i+1)+'</td><td>'+p.name+'</td><td>'+p.roll+'</td><td>'+p.dept+'</td><td>'+p.year+'</td><td>'+p.event+'</td><td>'+p.email+'</td></tr>';
+    }).join('');
+  }
+
+  function addEvent() {
+    var name = document.getElementById('ev-name').value.trim();
+    var cat = document.getElementById('ev-cat').value;
+    var date = document.getElementById('ev-date').value;
+    var venue = document.getElementById('ev-venue').value.trim();
+    var seats = parseInt(document.getElementById('ev-seats').value);
+    var desc = document.getElementById('ev-desc').value.trim();
+    if(!name||!date||!venue||!seats){alert('Please fill in all required fields.');return;}
+    events.push({id:nextId++, name:name, category:cat, date:date, venue:venue, seats:seats, desc:desc||'No description provided.'});
+    document.getElementById('ev-name').value='';
+    document.getElementById('ev-date').value='';
+    document.getElementById('ev-venue').value='';
+    document.getElementById('ev-seats').value='';
+    document.getElementById('ev-desc').value='';
+    var msg = document.getElementById('admin-success');
+    msg.style.display='block';
+    setTimeout(function(){msg.style.display='none';}, 3000);
+    renderAdminEvents();
+  }
+
+  function deleteEvent(id) {
+    if(!confirm('Are you sure you want to delete this event? All its registrations will also be removed.')) return;
+    events = events.filter(function(e){return e.id!==id;});
+    participants = participants.filter(function(p){return p.evId!==id;});
+    renderAdminEvents();
+  }
+
+  function renderAdminEvents() {
+    var list = document.getElementById('admin-events-list');
+    if(events.length===0){list.innerHTML='<div class="empty" style="padding:1.5rem">No events yet.</div>';return;}
+    list.innerHTML = events.map(function(e){
+      var reg = participants.filter(function(p){return p.evId===e.id;}).length;
+      return '<div class="admin-event-row"><div><div style="font-size:13px;font-weight:600">'+e.name+'</div><div style="font-size:12px;color:#64748b;margin-top:2px">'+e.category+' &middot; '+e.date+' &middot; '+reg+'/'+e.seats+' seats</div></div><button class="btn btn-danger" style="font-size:12px;padding:6px 14px;white-space:nowrap" onclick="deleteEvent('+e.id+')">Delete</button></div>';
+    }).join('');
+  }
+
+  renderHome();
+</script>
+</body>
+</html>
